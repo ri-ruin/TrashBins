@@ -1,0 +1,8 @@
+# TLC generated state storage
+states/
+
+# TLC error-trace modules
+*_TTrace_*.tla
+
+# Generated backups
+*.old
