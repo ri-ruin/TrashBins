@@ -351,7 +351,31 @@ it will do so in steps.
 process controlProcess = Control
 begin
   ControlStart:
-    
+    \* we can divide thisinto 3 differnet processes which loop continuously.
+    while TRUE do \* ended the repeat part.
+      either
+        \* handle the scans. ahndles 1. scans.
+        await scans /= <<>>;
+        \* wait until scans queue is not empty.
+        \* also in pluscal apparently you can use both # and /= for not equal to. interchangably.
+        with s = Head(scans) do
+          scans := Tail(scans);
+          \* take the first scan, remove it and change scans to be without it.
+          serverRequests := Append(serverRequests, [user |-> s.user]);
+          \* this was hella confusing. basically you append the value stored at s and send it throush server requests by appending it 
+          \* |-> this is for mapping. [] is the record appended. 
+        end with;
+      or
+        \* now we handle the second part ie handle server response.
+        await serverResponses /= <<>>;
+        with r = Head(serverResponses) do 
+          \* the biggerst prooblem is use of =, := or ==. too confusing.
+          \* this is tiring and boring. BOOORRRRINg.
+          serverResponses := Tail(serverResponses);
+          \* now we have changed the response values or list.
+          permissions:= Append(permissions, [user |-> r.user, bin |-> 1, granted |-> r.permission]);
+        end with;
+        \* this is annoying. 
 end process;
 
 
