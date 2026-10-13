@@ -108,19 +108,44 @@ CapacityNotExceeded == ~CapacityExceeded
 \* Replace FALSE by your own formalisation of each property.
 
 \* The outer door can only be locked if it is closed.
-OuterDoorLocked == FALSE
+\* First lets finish the properties of interest.
+OuterDoorLocked == outerDoorLocked => ~outerDoorOpen
+\* basically if the outerdoor is locked then it is automaticlaly true that outer door is not open, 
+\* so outer door closed happens before outerdoor is locked.
+\* safety property.
+
 \* The vertical ram is only used when the outer door is closed and locked.
-RamOuterDoor == FALSE
+RamOuterDoor == ramExtended => (outerDoorLocked /\ ~outerDoorOpen)
+\* the and symbol is relaly weird. is the or symbol then \/. most likely.
+\* so we have to just turn the above sentence into proper logic.
+\* safety property.
+
 \* Every time the trash bin is full, it is eventually not full anymore.
-TrashEmptied == FALSE
+TrashEmptied == [](CapacityExceeded => <>~CapacityExceeded)
+\* this was a weird one
+\* [] means always
+\* <> means eventually.
+\* temporal property is what ahppens over time or what will eventually happen.
+\* safety property is what shouldnt happen.
+\* temporal property
+
 \* An unauthorized user cannot open the outer door.
-AuthorizedOpenOnly == FALSE
+AuthorizedOpenOnly == [](outerDoorOpen=> \A u \in Users : u # 42)
+\* 42 is invalid as written in the trashdata file.
+\* \A means for all. so for all u in users: u # ie not equal to 42.
+
 \* The user infinitely often has trash and infinitely often has no trash.
-UserTrash == FALSE
+UserTrash == []<>(userTrash> 0) /\ []<>(userTrash = 0)
+\* liveliness style property.
+
+
 \* Every time the user has trash, they can deposit their trash.
-UserTrashDeposited == FALSE
+UserTrashDeposited == [](userTrash> 0 => <>(userTrash= 0))
+\* its like saying: whenever user has trash, they would eventually not have trash.
+
 \* Every time the truck is requested for the trash bin, the truck has eventually emptied the bin.
-TruckEmpties == FALSE
+TruckEmpties == [](truckCommand.command = "request" => <>(truckCommand.command = "emptied"))
+\* till here it was ismple logic. need to work more now.
 
 end define;
 
