@@ -376,6 +376,47 @@ begin
           permissions:= Append(permissions, [user |-> r.user, bin |-> 1, granted |-> r.permission]);
         end with;
         \* this is annoying. 
+      or
+        \* now we do step by step 
+        \* a.
+        await binSensor.sensor = "outer_door_closed";
+        binSensor.sensor = "idle";
+
+        \* then we do b.
+        binCommand.command := [command |-> "change_outer_lock", open |-> FALSE];\* i have written flase insteadd of FALSE 7 times continuously.
+        await binCommand.command = "finished";
+
+        \* c.
+        binCommand.command := [command |-> "change_trap_door", open |-> TRUE];
+        await binCommand.command = "finished";
+
+        \* d. 
+        binCommand.command := [command |-> "change_trap_door", open |-> FALSE];
+        await binCommand.command = "finished";
+
+        \* e. 
+        binCommand.command := [command |-> "change_ram", open |-> TRUE];
+        await binCommand.command = "finished";
+
+        \* f. 
+        binCommand.command := [command |-> "change_ram", open |-> FALSE];
+        await binCommand.command = "finished";
+
+        \* g. 
+        \* this is gonna be annoying, maybe, no i must use if then statement 
+        if CapacityExceeded \/ Trash > (trashCapacity \div 2) then 
+          \* this is weird, usually in python after such statement slike while, do or then or if there is always :. i am making mistakes 
+          truckCommand:= [command |-> "request", bin |-> 1];
+          await truckCommand.command = "arrived";
+          truckCommand.command := "start_emptying";
+          \* empty the bin.
+          binCommand := [command |-> "empty", open |-> FALSE];
+          await binCommand.command = "finished";
+          truckCommand.command := "emptied";
+        end if;
+      end either;
+    end while;
+\* this is soo annoying. i think this will not work.
 end process;
 
 
