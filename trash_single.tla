@@ -136,7 +136,8 @@ AuthorizedOpenOnly == [](outerDoorOpen=> \A u \in Users : u # 42)
 
 \* The user infinitely often has trash and infinitely often has no trash.
 UserTrash == []<>(userTrash> 0) /\ []<>(userTrash = 0)
-\* liveliness style property.
+\* liveliness style property. - a type of temporal property. 
+\* research is good.
 
 
 \* Every time the user has trash, they can deposit their trash.
@@ -296,13 +297,30 @@ end process;
 \*****************************
 \* DUMMY truck process type.
 \* Remodel it to react to requests and empty the trash bin!
+\* a process is a concurrently running thread. unlnike something like def or class, it isnt sequential.
 process truckProcess \in Trucks
+(* the trucks behavuior as repeating cycle.
+1. waiting for the request.
+2. travel to the bin, im lazy, not changing the numbers.
+2. permission to empty the bin
+3. wait till emptied.
+*)
 begin
   TruckStart:
-    \* Implement behaviour
-    skip;
+    while TRUE do
+      \* apparently after do, there shouldnt be :
+      \* apparently it is TRUE not True.
+      await truckCommand.command = "request";
+      truckCommand.command := "arrived";
+      \* apparaently normal equal to is not used. you do := 
+      \* so basically wait for request and then send or have command arrived.
+      \* now i need to do await for start emptying and then wait till emptied.
+      await truckCommand.command = "start_emptying";
+      await truckCommand.command = "emptied";
+    end while;
+    \* it is refreshing to have ; back. python nearly annoyed me with those indentations and no ;. i mean python allows it for single line code.
 end process;
-
+\* this is infinite loop for truck behaviour. a bit easy here, but would be complicated later on.
 
 \*****************************
 \* Process for the controller
