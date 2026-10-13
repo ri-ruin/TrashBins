@@ -327,11 +327,31 @@ end process;
 \*****************************
 \* DUMMY main control process type.
 \* Remodel it to control the trash bin system and handle requests by users!
+(* this process is for coordinating user, bin, server and truck
+it will do so in steps.
+1. if user scans their card, then what needs to be done is remove it from  queue and send data to server.
+2. wait for response from server, if it arrives then store user permission for bin.
+3. if and when the outer door closes, 
+  a. reset the door sensor.
+  b. then lock the door 
+  c. open the ram door? inner door? trap door?
+  d. <trash fell down> close trap door.
+  e. use ram to crush trash.
+  f. retract.
+  g. if bin if full or near critical
+    i. request truck.
+    ii. wait until truck arrives.
+    iii. tell the truck to start emptying. basically the truck again.
+    iv. command bin to empty itself.
+    v. wait until empty.
+    vi. tell truck its over.
+    its not over until i win. :) 
+4. repeat.
+*)
 process controlProcess = Control
 begin
   ControlStart:
-    \* Implement behaviour
-    skip;
+    
 end process;
 
 
